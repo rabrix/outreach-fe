@@ -24,29 +24,63 @@ export interface LaunchCampaignResponse {
   campaignId: string;
 }
 
+export interface CampaignStepStatus {
+  dominantStep: number | null;
+  byStep: { step: number; leadCount: number }[];
+  enrolledLeads: number;
+}
+
+export interface CampaignStats {
+  emailsSent: number;
+  replies: number;
+  currentStepStatus: CampaignStepStatus;
+  lastSentAt: string | null;
+  followupCounts: number;
+  sentCount: number;
+  totalReplies: number;
+  totalLeads: number;
+}
+
+export interface CampaignListStats {
+  emailsSent: number;
+  replies: number;
+  currentStepStatus: CampaignStepStatus;
+  lastSentAt: string | null;
+}
+
+export interface CampaignStep {
+  id: string;
+  campaignId: string;
+  stepOrder: number;
+  subject: string;
+  content: string;
+  delayDays: number;
+  createdAt: string;
+}
+
+export interface CampaignGmailAccount {
+  id: string;
+  emailAddress: string;
+  userId: string;
+  isActive: boolean;
+}
+
 export interface GetStatsResponse {
   success: true;
-  stats: {
-    totalLeads: number;
-    sentCount: number;
-    totalReplies: number;
-    followupCounts: number;
-  };
+  stats: CampaignStats;
 }
 
 export interface Campaign {
   id: string;
   userId: string;
   name: string;
+  leadListId: string | null;
   status: "draft" | "running" | "paused" | "completed";
-  gmailAccounts: {
-    id: string;
-    emailAddress: string;
-    isActive: boolean;
-  }[];
-  leadListId?: string; // Added to support "View Leads"
   createdAt: string;
   updatedAt: string;
+  gmailAccounts: CampaignGmailAccount[];
+  steps: CampaignStep[];
+  stats: CampaignListStats;
 }
 
 export interface GetAllCampaignsResponse {
@@ -56,7 +90,7 @@ export interface GetAllCampaignsResponse {
 
 // API Calls
 export const getAllCampaigns = async (userId: string): Promise<GetAllCampaignsResponse> => {
-  return apiClient<GetAllCampaignsResponse>(`/campaigns?userId=${userId}`, {
+  return apiClient<GetAllCampaignsResponse>(`/campaigns?userId=${encodeURIComponent(userId)}`, {
     method: "GET",
   });
 };
@@ -79,7 +113,7 @@ export const launchCampaign = async (
 };
 
 export const getCampaignStats = async (id: string): Promise<GetStatsResponse> => {
-  return apiClient<GetStatsResponse>(`/campaigns/${id}/stats`, {
+  return apiClient<GetStatsResponse>(`/campaigns/${encodeURIComponent(id)}/stats`, {
     method: "GET",
   });
 };

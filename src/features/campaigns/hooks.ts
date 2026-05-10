@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { dashboardKeys } from "@/features/dashboard/hooks";
 import {
   getAllCampaigns,
   createCampaign,
@@ -45,9 +46,9 @@ export const useCreateCampaign = () => {
 
   return useMutation({
     mutationFn: (data: CreateCampaignRequest) => createCampaign(data),
-    onSuccess: () => {
-      // Invalidate relevant queries if any (e.g., a list of campaigns)
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: campaignKeys.all });
+      queryClient.invalidateQueries({ queryKey: dashboardKeys.byUser(variables.userId) });
     },
   });
 };
@@ -59,10 +60,11 @@ export const useLaunchCampaign = () => {
     mutationFn: ({ id, data }: { id: string; data: LaunchCampaignRequest }) =>
       launchCampaign(id, data),
     onSuccess: (_, variables) => {
-      // Invalidate stats for this campaign
       queryClient.invalidateQueries({
         queryKey: campaignKeys.stats(variables.id),
       });
+      queryClient.invalidateQueries({ queryKey: campaignKeys.all });
+      queryClient.invalidateQueries({ queryKey: dashboardKeys.all });
     },
   });
 };
