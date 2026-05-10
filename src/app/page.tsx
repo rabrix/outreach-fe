@@ -1,65 +1,118 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { Plus } from "lucide-react";
+import {
+  DashboardLayout,
+  Card,
+  MetricSparklineCard,
+  EntityPerformanceCard,
+  ScheduledEventCard,
+  IntegrationToggleCard
+} from "@/components";
+
+
+import { useAuthStore } from "@/store/useAuthStore";
+
+
+export default function HomePage() {
+  const router = useRouter();
+  const [isMounted, setIsMounted] = useState(false);
+  const { user } = useAuthStore();
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  // Stats data adapted for MetricSparklineCard
+  const stats = [
+    {
+      title: "Active Campaigns",
+      value: "12",
+      period: "This week",
+      trend: "+2",
+      isPositive: true,
+    },
+    {
+      title: "Total Prospects",
+      value: "2,450",
+      period: "This month",
+      trend: "+180",
+      isPositive: true,
+    },
+    {
+      title: "Emails Sent",
+      value: "15.2k",
+      period: "Today",
+      trend: "+1.2k",
+      isPositive: true,
+    },
+    {
+      title: "Average Reply Rate",
+      value: "2.5%",
+      period: "Last week",
+      trend: "+1.2%",
+      isPositive: true,
+    },
+  ];
+
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+    <DashboardLayout>
+      <div className="space-y-8">
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {stats.map((stat, i) => (
+            <MetricSparklineCard
+              key={i}
+              title={stat.title}
+              value={stat.value}
+              period={stat.period}
+              trend={stat.trend}
+              isPositive={stat.isPositive}
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+          ))}
         </div>
-      </main>
-    </div>
+
+        {/* Main Content Area */}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-bold text-foreground">Recent Campaigns</h2>
+            <button className="text-sm font-semibold text-primary hover:underline">
+              View All
+            </button>
+          </div>
+          <Card className="p-0 overflow-hidden">
+            <div className="divide-y divide-border">
+              {[1, 2, 3].map((item) => (
+                <div
+                  key={item}
+                  className="p-4 hover:bg-secondary/50 transition cursor-pointer flex items-center gap-4"
+                >
+                  <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center text-primary font-bold">
+                    C{item}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-semibold text-foreground truncate">
+                      SaaS Founders Q2 Outreach #{item}
+                    </h4>
+                    <p className="text-xs text-muted-foreground flex items-center gap-2">
+                      <span className="inline-block w-2 h-2 rounded-full bg-emerald-500"></span>
+                      Active • 450 prospects • 24% reply rate
+                    </p>
+                  </div>
+                  <div className="text-right hidden sm:block">
+                    <p className="text-sm font-bold text-foreground">124 sent</p>
+                    <p className="text-xs text-muted-foreground">Last sent 2h ago</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Card>
+        </div>
+      </div>
+    </DashboardLayout>
+
   );
 }
