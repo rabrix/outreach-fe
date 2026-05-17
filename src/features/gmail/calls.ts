@@ -23,6 +23,12 @@ export const getAllGmailAccounts = async (userId: string): Promise<GetAllAccount
   });
 };
 
+export const deleteGmailAccount = async (id: string): Promise<{ success: true; message: string }> => {
+  return apiClient<{ success: true; message: string }>(`/gmail/accounts/${id}`, {
+    method: "DELETE",
+  });
+};
+
 // Email Templates
 export interface EmailTemplate {
   id: string;

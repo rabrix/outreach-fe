@@ -99,7 +99,7 @@ export function CreateCampaignModal({
             <option value="">Choose a list...</option>
             {leadLists.map((list) => (
               <option key={list.id} value={list.id}>
-                {list.name} ({list.leadCount ?? 0} leads)
+                {list.name} ({list.leadsCount ?? list.leadCount ?? 0} leads)
               </option>
             ))}
           </select>

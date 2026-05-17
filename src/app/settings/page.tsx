@@ -2,7 +2,7 @@
 
 import React, { useEffect } from "react";
 import { useAuthStore } from "@/store/useAuthStore";
-import { useGmailAccounts } from "@/features/gmail/hooks";
+import { useGmailAccounts, useDeleteGmailAccount } from "@/features/gmail/hooks";
 import { getAuthUrl } from "@/features/gmail/calls";
 import { DashboardLayout } from "@/components";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/Card";
@@ -15,7 +15,8 @@ import {
   AlertCircle,
   Loader2,
   ExternalLink,
-  ShieldCheck
+  ShieldCheck,
+  Trash2
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "react-toastify";
@@ -24,7 +25,8 @@ import { useSearchParams } from "next/navigation";
 export default function SettingsPage() {
   const user = useAuthStore((state) => state.user);
   const searchParams = useSearchParams();
-  const { data, isLoading, refetch } = useGmailAccounts(user?.id || "");
+  const { data, isLoading, refetch, isRefetching } = useGmailAccounts(user?.id || "");
+  const deleteAccount = useDeleteGmailAccount(user?.id || "");
 
   // Handle callback success/error from URL params
   useEffect(() => {
@@ -58,6 +60,22 @@ export default function SettingsPage() {
     }
     // Redirect to backend OAuth flow
     window.location.href = getAuthUrl(user.id);
+  };
+
+  const handleDeleteAccount = async (id: string, email: string) => {
+    if (window.confirm(`Are you sure you want to delete the account ${email}?`)) {
+      try {
+        await deleteAccount.mutateAsync(id);
+        toast.success("Account deleted successfully");
+      } catch (error) {
+        toast.error("Failed to delete account");
+      }
+    }
+  };
+
+  const handleRefresh = () => {
+    refetch();
+    toast.info("Refreshing accounts...");
   };
 
   return (
@@ -114,9 +132,19 @@ export default function SettingsPage() {
 
             {/* Connected Accounts List */}
             <div className="md:col-span-2 space-y-4">
-              <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider ml-1">
-                Connected Accounts ({data?.accounts?.length || 0})
-              </h4>
+              <div className="flex items-center justify-between ml-1">
+                <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+                  Connected Accounts ({data?.accounts?.length || 0})
+                </h4>
+                <button
+                  onClick={handleRefresh}
+                  disabled={isLoading || isRefetching}
+                  className="flex items-center gap-2 text-xs font-medium text-primary hover:text-primary/80 transition-colors disabled:opacity-50"
+                >
+                  <RefreshCw className={cn("w-3.5 h-3.5", (isLoading || isRefetching) && "animate-spin")} />
+                  Refresh
+                </button>
+              </div>
 
               {isLoading ? (
                 <div className="flex flex-col items-center justify-center py-12 bg-card rounded-3xl border border-border/50">
@@ -158,6 +186,18 @@ export default function SettingsPage() {
                               </div>
                             </div>
                           )}
+                          <button
+                            onClick={() => handleDeleteAccount(account.id, account.emailAddress)}
+                            disabled={deleteAccount.isPending}
+                            className="p-2.5 bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white rounded-xl transition-all flex items-center justify-center disabled:opacity-50"
+                            title="Delete Account"
+                          >
+                            {deleteAccount.isPending ? (
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                            ) : (
+                              <Trash2 className="w-4 h-4" />
+                            )}
+                          </button>
                         </div>
                       </CardContent>
                     </Card>

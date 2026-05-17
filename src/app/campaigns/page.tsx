@@ -107,6 +107,7 @@ export default function CampaignsPage() {
                 campaign={campaign}
                 onLaunch={handleLaunchCampaign}
                 launchPending={launchCampaignMutation.isPending}
+                leadList={leadLists.find((list) => list.id === campaign.leadListId)}
               />
             ))
           )}

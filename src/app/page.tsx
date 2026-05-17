@@ -11,6 +11,7 @@ import {
 import { useAuthStore } from "@/store/useAuthStore";
 import { useDashboard } from "@/features/dashboard/hooks";
 import { useCampaigns } from "@/features/campaigns/hooks";
+import { useAllLeadLists } from "@/features/leads/hooks";
 import { mapDashboardToMetricCards } from "@/features/dashboard/mapToMetricCards";
 
 export default function HomePage() {
@@ -20,6 +21,7 @@ export default function HomePage() {
 
   const { data: dashData, isLoading: dashLoading } = useDashboard(userId);
   const { data: campaignsData, isLoading: campaignsLoading } = useCampaigns(userId);
+  const { data: leadListsData } = useAllLeadLists();
 
   const metricCards = useMemo(() => {
     const dashboard = dashData?.success ? dashData.dashboard : null;
@@ -30,6 +32,8 @@ export default function HomePage() {
     if (!campaignsData?.success) return [];
     return campaignsData.campaigns.slice(0, 3);
   }, [campaignsData]);
+
+  const leadLists = leadListsData?.leadLists ?? [];
 
   return (
     <DashboardLayout>
@@ -57,6 +61,7 @@ export default function HomePage() {
             loading={campaignsLoading}
             campaigns={recentCampaigns}
             onRowNavigate={() => router.push("/campaigns")}
+            leadLists={leadLists}
           />
         </div>
       </div>

@@ -3,6 +3,7 @@
 import { Mail, Play, Pause, MoreVertical, Users, Settings } from "lucide-react";
 import { useRouter } from "next/navigation";
 import type { Campaign } from "@/features/campaigns/calls";
+import type { LeadList } from "@/features/leads/calls";
 import { getCampaignListMetrics } from "@/features/campaigns/listMetrics";
 import { Card, CardContent } from "@/components/ui/Card";
 import {
@@ -19,9 +20,10 @@ type CampaignCardProps = {
   campaign: Campaign;
   onLaunch: (campaign: Campaign) => void;
   launchPending: boolean;
+  leadList?: LeadList;
 };
 
-export function CampaignCard({ campaign, onLaunch, launchPending }: CampaignCardProps) {
+export function CampaignCard({ campaign, onLaunch, launchPending, leadList }: CampaignCardProps) {
   const router = useRouter();
   const m = getCampaignListMetrics(campaign);
 
@@ -40,10 +42,18 @@ export function CampaignCard({ campaign, onLaunch, launchPending }: CampaignCard
               </h3>
               <CampaignStatusBadge status={campaign.status} />
             </div>
-            <p className="text-sm text-muted-foreground">
-              Last updated {new Date(campaign.updatedAt).toLocaleDateString()}
-              {m.stepCount > 0 ? ` · ${m.stepCount} step${m.stepCount === 1 ? "" : "s"}` : ""}
-              {m.gmailCount > 0 ? ` · ${m.gmailCount} inbox${m.gmailCount === 1 ? "" : "es"}` : ""}
+            <p className="text-sm text-muted-foreground flex items-center gap-1.5 flex-wrap">
+              <span>Last updated {new Date(campaign.updatedAt).toLocaleDateString()}</span>
+              {leadList ? (
+                <>
+                  <span>·</span>
+                  <span className="inline-flex items-center gap-1 text-primary/85 font-medium">
+                    List: {leadList.name} ({leadList.leadsCount ?? leadList.leadCount ?? 0} leads)
+                  </span>
+                </>
+              ) : null}
+              {m.stepCount > 0 ? <span>· {m.stepCount} step{m.stepCount === 1 ? "" : "s"}</span> : null}
+              {m.gmailCount > 0 ? <span>· {m.gmailCount} inbox{m.gmailCount === 1 ? "" : "es"}</span> : null}
             </p>
           </div>
 

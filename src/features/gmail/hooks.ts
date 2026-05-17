@@ -5,6 +5,7 @@ import {
   createTemplate, 
   updateTemplate, 
   deleteTemplate,
+  deleteGmailAccount,
   CreateTemplateRequest 
 } from "./calls";
 
@@ -55,6 +56,16 @@ export const useDeleteTemplate = () => {
     mutationFn: deleteTemplate,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: gmailKeys.templates });
+    },
+  });
+};
+
+export const useDeleteGmailAccount = (userId: string) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: deleteGmailAccount,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: gmailKeys.accounts(userId) });
     },
   });
 };

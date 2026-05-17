@@ -1,6 +1,7 @@
 "use client";
 
 import type { Campaign } from "@/features/campaigns/calls";
+import type { LeadList } from "@/features/leads/calls";
 import { Card } from "@/components/ui/Card";
 import { Spinner } from "@/components/ui/Spinner";
 import { RecentCampaignRow } from "./RecentCampaignRow";
@@ -10,6 +11,7 @@ type RecentCampaignsListProps = {
   loading: boolean;
   campaigns: Campaign[];
   onRowNavigate: () => void;
+  leadLists?: LeadList[];
 };
 
 export function RecentCampaignsList({
@@ -17,6 +19,7 @@ export function RecentCampaignsList({
   loading,
   campaigns,
   onRowNavigate,
+  leadLists = [],
 }: RecentCampaignsListProps) {
   return (
     <Card className="p-0 overflow-hidden">
@@ -38,6 +41,7 @@ export function RecentCampaignsList({
               campaign={campaign}
               index={idx}
               onNavigate={onRowNavigate}
+              leadList={leadLists.find((list) => list.id === campaign.leadListId)}
             />
           ))
         )}

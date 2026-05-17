@@ -79,7 +79,7 @@ export function ViewProspectsTab({ isLoading, leadLists, onDelete, onSwitchToAdd
                 </span>
                 <span className="flex items-center gap-1">
                   <UsersIcon className="w-3 h-3" />
-                  {list.leadCount || 0} Leads
+                  {list.leadsCount ?? list.leadCount ?? 0} Leads
                 </span>
               </div>
             </div>

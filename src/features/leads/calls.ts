@@ -40,6 +40,7 @@ export interface LeadList {
   createdAt: string;
   updatedAt: string;
   leadCount?: number;
+  leadsCount?: number;
 }
 
 export interface UploadLeadsRequest {

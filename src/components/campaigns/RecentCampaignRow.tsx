@@ -1,6 +1,7 @@
 "use client";
 
 import type { Campaign } from "@/features/campaigns/calls";
+import type { LeadList } from "@/features/leads/calls";
 import { campaignStatusLabel, getCampaignListMetrics } from "@/features/campaigns/listMetrics";
 import { formatLastSentLabel, replyRatePercentInt } from "@/lib/format";
 
@@ -8,9 +9,10 @@ type RecentCampaignRowProps = {
   campaign: Campaign;
   index: number;
   onNavigate: () => void;
+  leadList?: LeadList;
 };
 
-export function RecentCampaignRow({ campaign, index, onNavigate }: RecentCampaignRowProps) {
+export function RecentCampaignRow({ campaign, index, onNavigate, leadList }: RecentCampaignRowProps) {
   const m = getCampaignListMetrics(campaign);
   const statusLabel = campaignStatusLabel(campaign.status);
   const initial = campaign.name.charAt(0).toUpperCase() || String(index + 1);
@@ -34,7 +36,7 @@ export function RecentCampaignRow({ campaign, index, onNavigate }: RecentCampaig
             }`}
           />
           <span>
-            {statusLabel} · {m.enrolled.toLocaleString()} enrolled · {replyPct}% reply rate
+            {statusLabel} · {leadList ? `${leadList.name} (${leadList.leadsCount ?? leadList.leadCount ?? 0} leads)` : `${m.enrolled.toLocaleString()} enrolled`} · {replyPct}% reply rate
           </span>
         </p>
       </div>

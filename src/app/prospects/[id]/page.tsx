@@ -138,7 +138,7 @@ export default function LeadListDetailsPage() {
             <div>
               <h1 className="text-3xl font-bold tracking-tight">{leadList?.name || "Lead List"}</h1>
               <p className="text-muted-foreground mt-1">
-                Total of {leadsData?.leads?.length || 0} leads in this collection.
+                Total of {leadsData?.leads?.length ?? leadList?.leadsCount ?? leadList?.leadCount ?? 0} leads in this collection.
               </p>
             </div>
 
